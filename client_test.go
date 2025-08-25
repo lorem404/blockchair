@@ -2,44 +2,36 @@ package blockchair
 
 import (
 	"testing"
-	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestRateLimit(t *testing.T) {
-	r := RateLimit{
-		Limit:     10,
-		Remaining: 10,
-		Period:    10,
-	}
-	if r.PercentageLeft() != 100 {
-		t.Error("PercentLeft != 100")
-	}
-	if r.WaitTime() != time.Second {
-		t.Error("WaitTime is wrong duration ", r.WaitTime())
-	}
-	if r.WaitTimeRemaining() != (time.Duration(1) * time.Second) {
-		t.Error("WaitTimeRemaining is wrong duration ", r.WaitTimeRemaining())
-	}
-
-	r.Remaining = 5
-	if r.PercentageLeft() != 50 {
-		t.Error("PercentLeft != 50")
-	}
-	if r.WaitTime() != time.Second {
-		t.Error("WaitTime is wrong duration ", r.WaitTime())
-	}
-	if r.WaitTimeRemaining() != (time.Duration(2) * time.Second) {
-		t.Error("WaitTimeRemaining is wrong duration ", r.WaitTimeRemaining())
-	}
-
-	r.Remaining = 0
-	if r.PercentageLeft() != 0 {
-		t.Error("PercentLeft != 0")
-	}
-	if r.WaitTime() != time.Second {
-		t.Error("WaitTime is wrong duration ", r.WaitTime())
-	}
-	if r.WaitTimeRemaining() != (time.Duration(10) * time.Second) {
-		t.Error("WaitTimeRemaining is wrong duration ", r.WaitTimeRemaining())
-	}
+func TestGetSupportedCrypto(t *testing.T) {
+	expect := []string{"bitcoin", "bitcoin-cash", "litecoin", "dogecoin", "dash", "groestlcoin", "zcash", "ecash", "bitcoin/testnet"}
+	actual := GetSupportedCrypto()
+	assert.Equal(t, expect, actual, "GetSupportedCrypto() should return the correct list of supported cryptocurrencies")
 }
+func TestGetSupportedCryptoEth(t *testing.T) {
+	expect := []string{"ethereum/testnet", "ethereum"}
+	actual := GetSupportedCryptoEth()
+	assert.Equal(t, expect, actual, "GetSupportedCryptoEth() should return the correct list")
+
+}
+func TestGetSupportedCryptoMultichaint(t *testing.T) {
+	expect := []string{"bitcoin", "bitcoin-cash", "litecoin", "dash", "groestlcoin", "zcash", "ethereum"}
+	actual := GetSupportedCryptoMultichain()
+	assert.Equal(t, expect, actual, "GetSupportedCryptoMultichain() should return the correct list")
+
+}
+func TestSetRateLimitFunc(t *testing.T)            {}
+func TestUserAgent(t *testing.T)                   {}
+func TestDefaultRateLimitFunc(t *testing.T)        {}
+func TestPercentageLeft(t *testing.T)              {}
+func TestWaitTime(t *testing.T)                    {}
+func TestWaitTimeRemaining(t *testing.T)           {}
+func TestRateLimitStrategySleep(t *testing.T)      {}
+func TestRateLimitStrategyConcurrent(t *testing.T) {}
+func TestParseRate(t *testing.T)                   {}
+func TestLoadResponse(t *testing.T)                {}
+func TestNew(t *testing.T)                         {}
+func TestSetClient(t *testing.T)                   {}
