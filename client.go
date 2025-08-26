@@ -35,6 +35,25 @@ var (
 	ErrETH = errors.New("blockchair: can only handle one Ethereum cryptocurrency address")
 )
 
+type Client struct {
+	client *http.Client
+
+	APIKey    string // API access key.
+	UserAgent string // Optional additional User-Agent fragment.
+
+	RateLimitFunc func(RateLimit) // Func to call after response is returned in LoadResponse.
+}
+
+// RateLimit store values from calling Premium API.
+type RateLimit struct {
+	Limit     int
+	Remaining int
+	Period    int
+}
+
+// RateLimitFunc is rate limiting strategy for the Client instance.
+type RateLimitFunc func(RateLimit)
+
 // GetSupportedCrypto List of supported Bitcoin-like crypto.
 func GetSupportedCrypto() []string {
 	return []string{"bitcoin", "bitcoin-cash", "litecoin", "dogecoin", "dash", "groestlcoin", "zcash", "ecash", "bitcoin/testnet"}
@@ -51,15 +70,6 @@ func GetSupportedCryptoMultichain() []string {
 }
 
 // Client specifies the mechanism by which individual API requests are made.
-type Client struct {
-	client *http.Client
-
-	APIKey    string // API access key.
-	UserAgent string // Optional additional User-Agent fragment.
-
-	RateLimitFunc func(RateLimit) // Func to call after response is returned in LoadResponse.
-}
-
 func (c *Client) userAgent() string {
 	c.UserAgent = strings.TrimSpace(c.UserAgent)
 	if c.UserAgent == "" {
@@ -72,16 +82,6 @@ func (c *Client) userAgent() string {
 // SetRateLimitFunc sets a Client instances' RateLimitFunc.
 func SetRateLimitFunc(ratefunc func(rl RateLimit)) func(*Client) {
 	return func(c *Client) { c.RateLimitFunc = ratefunc }
-}
-
-// RateLimitFunc is rate limiting strategy for the Client instance.
-type RateLimitFunc func(RateLimit)
-
-// RateLimit store values from calling Premium API.
-type RateLimit struct {
-	Limit     int
-	Remaining int
-	Period    int
 }
 
 var defaultRateLimitFunc = func(rl RateLimit) {}

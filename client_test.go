@@ -44,15 +44,24 @@ func TestUserAgent(t *testing.T) {
 		assert.Equal(t, expect, actual, "c.userAgent() should return blockchair-api-golang-0.1.3")
 	})
 }
-func TestSetRateLimitFunc(t *testing.T) {}
 
+func TestSetRateLimitFunc(t *testing.T) {
+	// rl := RateLimit{}
+	ratefunc := func(rl RateLimit) {}
+	expect := func(c *Client) { c.RateLimitFunc = ratefunc }
+	actual := SetRateLimitFunc(ratefunc)
+	assert.Equal(t, expect, actual, "SetRateLimitFunc(ratefunc) should return func(c *Client) { c.RateLimitFunc = ratefunc }")
+}
+
+// No implementation is provided for this function.
+// Since there is no logic to execute, no tests are needed at the moment.
 func TestDefaultRateLimitFunc(t *testing.T) {}
 
 func TestPercentageLeft(t *testing.T) {
 	rl := RateLimit{Remaining: 2, Limit: 2}
 	expect := 100
 	actual := rl.PercentageLeft()
-	assert.Equal(t, expect, actual, "rl.PercentageLeft() should return 100")
+	assert.Equal(t, expect, actual, "PercentageLeft() should return 100")
 }
 
 func TestWaitTime(t *testing.T)                    {}
@@ -61,9 +70,21 @@ func TestRateLimitStrategySleep(t *testing.T)      {}
 func TestRateLimitStrategyConcurrent(t *testing.T) {}
 func TestParseRate(t *testing.T)                   {}
 func TestLoadResponse(t *testing.T)                {}
+
 func TestNew(t *testing.T) {
 	expect := &Client{client: &http.Client{}, RateLimitFunc: defaultRateLimitFunc}
 	actual := New()
 	assert.Equal(t, expect, actual, "New() should return a Client struct")
 }
-func TestSetClient(t *testing.T) {}
+
+func TestSetClient(t *testing.T) {
+	t.Run("set valid client", func(t *testing.T) {
+		c := &Client{}
+		hc := &http.Client{}
+		c.SetClient(hc)
+
+		if c.client != hc {
+			t.Errorf("expected client to be set, got %v", c.client)
+		}
+	})
+}
