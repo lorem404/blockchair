@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/tools/go/expect"
 )
 
 func TestGetSupportedCrypto(t *testing.T) {
