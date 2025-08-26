@@ -1,9 +1,12 @@
 package blockchair
 
 import (
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
+	"golang.org/x/tools/go/expect"
 )
 
 func TestGetSupportedCrypto(t *testing.T) {
@@ -64,8 +67,37 @@ func TestPercentageLeft(t *testing.T) {
 	assert.Equal(t, expect, actual, "PercentageLeft() should return 100")
 }
 
-func TestWaitTime(t *testing.T)                    {}
-func TestWaitTimeRemaining(t *testing.T)           {}
+func TestWaitTime(t *testing.T) {
+	rl := RateLimit{
+		Period: 10,
+		Limit:  5,
+	}
+	expect := time.Duration(2) * time.Second
+	actual := rl.WaitTime()
+	assert.Equal(t, expect, actual, "WaitTime() should return 2s")
+}
+
+func TestWaitTimeRemaining(t *testing.T) {
+	t.Run("WaitTimeRemaining() should return 2s", func(t *testing.T) {
+		rl := RateLimit{
+			Remaining: 3,
+			Period:    6,
+		}
+		expect := time.Duration(2) * time.Second
+		actual := rl.WaitTimeRemaining()
+		assert.Equal(t, expect, actual, "WaitTimeRemaining() should return 2s")
+	})
+	t.Run("WaitTimeRemaining() should return 6s", func(t *testing.T) {
+		rl := RateLimit{
+			Remaining: 1,
+			Period:    6,
+		}
+		expect := time.Duration(6) * time.Second
+		actual := rl.WaitTimeRemaining()
+		assert.Equal(t, expect, actual, "WaitTimeRemaining() should return 6s")
+	})
+}
+
 func TestRateLimitStrategySleep(t *testing.T)      {}
 func TestRateLimitStrategyConcurrent(t *testing.T) {}
 func TestParseRate(t *testing.T)                   {}
