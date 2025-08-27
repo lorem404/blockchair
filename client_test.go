@@ -99,8 +99,35 @@ func TestWaitTimeRemaining(t *testing.T) {
 
 func TestRateLimitStrategySleep(t *testing.T)      {}
 func TestRateLimitStrategyConcurrent(t *testing.T) {}
-func TestParseRate(t *testing.T)                   {}
-func TestLoadResponse(t *testing.T)                {}
+
+func TestParseRate(t *testing.T) {
+	t.Run("parseRate() should return something like expected", func(t *testing.T) {
+		countRemaining = 30
+		expect := RateLimit{
+			Limit:     30,
+			Remaining: 29,
+			Period:    30,
+		}
+		actual := parseRate("foo")
+		assert.Equal(t, expect, actual, "parseRate() should return something like expected")
+		assert.Equal(t, 29, countRemaining, "countRemaining should be decremented")
+	})
+
+	t.Run("parseRate() should return something like expected", func(t *testing.T) {
+
+		countRemaining = 30
+		expect := RateLimit{
+			Limit:     1,
+			Remaining: 1,
+			Period:    5,
+		}
+		actual := parseRate("")
+		assert.Equal(t, expect, actual, "parseRate() should return something like expected")
+		assert.Equal(t, 30, countRemaining, "countRemaining should not be decremented")
+	})
+}
+
+func TestLoadResponse(t *testing.T) {}
 
 func TestNew(t *testing.T) {
 	expect := &Client{client: &http.Client{}, RateLimitFunc: defaultRateLimitFunc}
